@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Inventario Fradiavolo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d1f1f 100%);
+      font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #e85a19 0%, #c44518 100%);
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(232, 90, 25, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    
+    .logo {
+      font-size: 36px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .sottotitolo {
+      font-size: 14px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+    
+    .main-content {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .punto-vendita-section {
+      margin-bottom: 24px;
+    }
+    
+    .label-grande {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #e85a19;
+    }
+    
+    .select-grande {
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      border: 2px solid rgba(232, 90, 25, 0.3);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e85a19' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 20px;
+    }
+    
+    .select-grande:focus {
+      border-color: #e85a19;
+      background-color: rgba(255,255,255,0.08);
+    }
+    
+    .select-grande option {
+      background: #2d1f1f;
+      color: #fff;
+      padding: 12px;
+    }
+    
+    .sezione {
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .sezione-titolo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .icona {
+      font-size: 24px;
+    }
+    
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .prodotto-card {
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    
+    .prodotto-card:last-child {
+      margin-bottom: 0;
+    }
+    
+    .prodotto-nome {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #e85a19;
+    }
+    
+    .campi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    
+    .campo-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .input {
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      outline: none;
+      transition: all 0.2s ease;
+      width: 100%;
+      font-family: inherit;
+    }
+    
+    .input:focus {
+      border-color: #e85a19;
+      background: rgba(255,255,255,0.12);
+    }
+    
+    .input::placeholder {
+      color: rgba(255,255,255,0.3);
+    }
+    
+    input[type="date"] {
+      -webkit-appearance: none;
+      color-scheme: dark;
+    }
+    
+    .foto-section {
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .foto-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    
+    .foto-descrizione {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 16px;
+    }
+    
+    .foto-upload-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      background: rgba(232, 90, 25, 0.2);
+      border: 2px dashed rgba(232, 90, 25, 0.5);
+      border-radius: 12px;
+      color: #e85a19;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    
+    .foto-upload-btn:hover {
+      background: rgba(232, 90, 25, 0.3);
+      border-color: #e85a19;
+    }
+    
+    .foto-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .foto-item {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    
+    .foto-preview {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .foto-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .foto-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .foto-desc-input {
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      outline: none;
+      transition: all 0.2s ease;
+      width: 100%;
+      font-family: inherit;
+      resize: none;
+      min-height: 60px;
+    }
+    
+    .foto-desc-input:focus {
+      border-color: #e85a19;
+      background: rgba(255,255,255,0.12);
+    }
+    
+    .foto-desc-input::placeholder {
+      color: rgba(255,255,255,0.4);
+    }
+    
+    .rimuovi-foto-btn {
+      background: rgba(220, 38, 38, 0.8);
+      border: none;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      align-self: flex-start;
+    }
+    
+    .rimuovi-foto-btn:hover {
+      background: rgba(220, 38, 38, 1);
+    }
+    
+    .hidden-input {
+      display: none;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #e85a19 0%, #c44518 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(232, 90, 25, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      margin-top: 10px;
+    }
+    
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(232, 90, 25, 0.5);
+    }
+    
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .submit-btn.success {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+    }
+    
+    .submit-btn.loading {
+      opacity: 0.7;
+      cursor: wait;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #22c55e;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-container">
+      <span class="logo">🍕</span>
+      <h1>Inventario Fradiavolo</h1>
+    </div>
+    <p class="sottotitolo">Compila tutti i campi per ogni prodotto presente</p>
+  </div>
+
+  <div class="main-content">
+    <div class="punto-vendita-section">
+      <label class="label-grande">📍 Punto Vendita</label>
+      <select id="puntoVendita" class="select-grande">
+        <option value="">Seleziona punto vendita...</option>
+        <option value="FDV GENOVA CASTELLO">FDV GENOVA CASTELLO</option>
+        <option value="FDV GENOVA MARE">FDV GENOVA MARE</option>
+        <option value="FDV BOLOGNA S.STEFANO">FDV BOLOGNA S.STEFANO</option>
+        <option value="FDV MILANO SEMPIONE">FDV MILANO SEMPIONE</option>
+        <option value="FDV VARESE">FDV VARESE</option>
+        <option value="FDV MILANO ISOLA">FDV MILANO ISOLA</option>
+        <option value="FDV MILANO CITYLIFE">FDV MILANO CITYLIFE</option>
+        <option value="FDV ARESE">FDV ARESE</option>
+        <option value="FDV PARMA">FDV PARMA</option>
+        <option value="FDV MILANO BICOCCA">FDV MILANO BICOCCA</option>
+        <option value="FDV MONZA">FDV MONZA</option>
+        <option value="FDV MILANO PREMUDA">FDV MILANO PREMUDA</option>
+        <option value="FDV MILANO PORTA VENEZIA">FDV MILANO PORTA VENEZIA</option>
+        <option value="FDV MODENA">FDV MODENA</option>
+        <option value="FDV BRESCIA CENTRO">FDV BRESCIA CENTRO</option>
+        <option value="FDV RIMINI">FDV RIMINI</option>
+        <option value="FDV ROMA PARIOLI">FDV ROMA PARIOLI</option>
+        <option value="FDV NOVARA">FDV NOVARA</option>
+        <option value="FDV TORINO CARLINA">FDV TORINO CARLINA</option>
+        <option value="FDV TORINO GM">FDV TORINO GM</option>
+        <option value="FDV TORINO IV MARZO">FDV TORINO IV MARZO</option>
+        <option value="FDV ALESSANDRIA">FDV ALESSANDRIA</option>
+        <option value="FDV TORINO VANCHIGLIA">FDV TORINO VANCHIGLIA</option>
+        <option value="FDV ROMA OSTIENSE">FDV ROMA OSTIENSE</option>
+        <option value="FDV ASTI">FDV ASTI</option>
+        <option value="FDV TORINO SAN SALVARIO">FDV TORINO SAN SALVARIO</option>
+        <option value="FDV ROMA TRASTEVERE">FDV ROMA TRASTEVERE</option>
+      </select>
+    </div>
+
+    <!-- SALUMI -->
+    <div class="sezione">
+      <div class="sezione-titolo">
+        <span class="icona">🥓</span>
+        <h2>Salumi</h2>
+      </div>
+      
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Prosciutto cotto</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Prosciutto cotto" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Prosciutto cotto" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Prosciutto cotto" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° fette</label>
+            <input type="number" class="input" data-prodotto="Prosciutto cotto" data-campo="quantita" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Prosciutto crudo</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Prosciutto crudo" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Prosciutto crudo" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Prosciutto crudo" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° fette</label>
+            <input type="number" class="input" data-prodotto="Prosciutto crudo" data-campo="quantita" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Mortadella</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Mortadella" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Mortadella" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Mortadella" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° fette</label>
+            <input type="number" class="input" data-prodotto="Mortadella" data-campo="quantita" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Spianata</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Spianata" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Spianata" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Spianata" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° fette</label>
+            <input type="number" class="input" data-prodotto="Spianata" data-campo="quantita" placeholder="0">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARNE -->
+    <div class="sezione">
+      <div class="sezione-titolo">
+        <span class="icona">🍗</span>
+        <h2>Carne</h2>
+      </div>
+      
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Polpette</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Polpette" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Polpette" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Polpette" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° pezzi</label>
+            <input type="number" class="input" data-prodotto="Polpette" data-campo="quantita" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Pollo</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Pollo" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Pollo" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Pollo" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° pezzi</label>
+            <input type="number" class="input" data-prodotto="Pollo" data-campo="quantita" placeholder="0">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LATTICINI -->
+    <div class="sezione">
+      <div class="sezione-titolo">
+        <span class="icona">🧀</span>
+        <h2>Latticini</h2>
+      </div>
+      
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Fiordilatte</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Fiordilatte" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Fiordilatte" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Fiordilatte" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° pezzi</label>
+            <input type="text" class="input" data-prodotto="Fiordilatte" data-campo="quantita" placeholder="es. 1 busta">
+          </div>
+        </div>
+      </div>
+
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Burrata</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Burrata" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Burrata" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Burrata" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° pezzi</label>
+            <input type="text" class="input" data-prodotto="Burrata" data-campo="quantita" placeholder="es. 2 burrate">
+          </div>
+        </div>
+      </div>
+
+      <div class="prodotto-card">
+        <div class="prodotto-nome">Affumicata</div>
+        <div class="campi-grid">
+          <div class="campo-wrapper">
+            <label class="label">Lotto</label>
+            <input type="text" class="input" data-prodotto="Affumicata" data-campo="lotto" placeholder="N° lotto">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Scadenza</label>
+            <input type="date" class="input" data-prodotto="Affumicata" data-campo="scadenza">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">Peso (gr)</label>
+            <input type="number" class="input" data-prodotto="Affumicata" data-campo="peso" placeholder="0">
+          </div>
+          <div class="campo-wrapper">
+            <label class="label">N° pezzi</label>
+            <input type="text" class="input" data-prodotto="Affumicata" data-campo="quantita" placeholder="es. 1 busta">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOTO ANOMALIE -->
+    <div class="foto-section">
+      <div class="foto-header">
+        <span class="icona">📸</span>
+        <h2>Foto Anomalie</h2>
+      </div>
+      <p class="foto-descrizione">
+        In caso di anomalie di peso, allega foto del prodotto sulla bilancia e descrivi il problema
+      </p>
+      
+      <input type="file" id="fotoInput" class="hidden-input" accept="image/*" multiple>
+      <label for="fotoInput" class="foto-upload-btn">
+        + Aggiungi foto
+      </label>
+      
+      <div id="fotoList" class="foto-list"></div>
+    </div>
+
+    <button id="submitBtn" class="submit-btn" disabled>
+      📄 Scarica PDF
+    </button>
+  </div>
+
+  <div class="footer">
+    <p>Fradiavolo © 2025</p>
+  </div>
+
+  <div id="toast" class="toast">✓ PDF scaricato!</div>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+    
+    const puntoVenditaSelect = document.getElementById('puntoVendita');
+    const fotoInput = document.getElementById('fotoInput');
+    const fotoList = document.getElementById('fotoList');
+    const submitBtn = document.getElementById('submitBtn');
+    const toast = document.getElementById('toast');
+    
+    let fotoAnomalie = [];
+    
+    function updateSubmitButton() {
+      submitBtn.disabled = !puntoVenditaSelect.value;
+    }
+    
+    puntoVenditaSelect.addEventListener('change', updateSubmitButton);
+    
+    // Photo handling
+    fotoInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          fotoAnomalie.push({
+            id: Date.now() + Math.random(),
+            name: file.name,
+            data: e.target.result,
+            descrizione: ''
+          });
+          renderFotos();
+        };
+        reader.readAsDataURL(file);
+      });
+      fotoInput.value = '';
+    });
+    
+    function renderFotos() {
+      fotoList.innerHTML = fotoAnomalie.map((foto, index) => `
+        <div class="foto-item" data-id="${foto.id}">
+          <div class="foto-preview">
+            <img src="${foto.data}" alt="${foto.name}">
+          </div>
+          <div class="foto-details">
+            <textarea 
+              class="foto-desc-input" 
+              placeholder="Descrivi l'anomalia (es. Peso inferiore al previsto, prodotto danneggiato...)"
+              onchange="updateDescrizione(${index}, this.value)"
+            >${foto.descrizione}</textarea>
+            <button class="rimuovi-foto-btn" onclick="rimuoviFoto(${index})">✕ Rimuovi</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function updateDescrizione(index, value) {
+      fotoAnomalie[index].descrizione = value;
+    }
+    
+    function rimuoviFoto(index) {
+      fotoAnomalie.splice(index, 1);
+      renderFotos();
+    }
+    
+    function collectData() {
+      // Aggiorna le descrizioni dai textarea prima di raccogliere
+      document.querySelectorAll('.foto-desc-input').forEach((textarea, index) => {
+        if (fotoAnomalie[index]) {
+          fotoAnomalie[index].descrizione = textarea.value;
+        }
+      });
+      
+      const inventario = {};
+      
+      document.querySelectorAll('.input[data-prodotto]').forEach(input => {
+        const prodotto = input.dataset.prodotto;
+        const campo = input.dataset.campo;
+        
+        if (!inventario[prodotto]) {
+          inventario[prodotto] = { lotto: '', scadenza: '', peso: '', quantita: '' };
+        }
+        
+        inventario[prodotto][campo] = input.value || '';
+      });
+      
+      return {
+        puntoVendita: puntoVenditaSelect.value,
+        dataCompilazione: new Date().toLocaleDateString('it-IT'),
+        inventario,
+        foto: fotoAnomalie
+      };
+    }
+    
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const [year, month, day] = dateStr.split('-');
+      return `${day}/${month}/${year}`;
+    }
+    
+    async function generatePDF(dati) {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      
+      // Header
+      doc.setFillColor(232, 90, 25);
+      doc.rect(0, 0, pageWidth, 35, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('INVENTARIO FRADIAVOLO', pageWidth / 2, 18, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(dati.puntoVendita, pageWidth / 2, 28, { align: 'center' });
+      
+      // Data compilazione
+      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(10);
+      doc.text(`Data: ${dati.dataCompilazione}`, pageWidth - 15, 45, { align: 'right' });
+      
+      let yPos = 55;
+      
+      const categorie = [
+        { nome: 'SALUMI', prodotti: ['Prosciutto cotto', 'Prosciutto crudo', 'Mortadella', 'Spianata'], unita: 'fette' },
+        { nome: 'CARNE', prodotti: ['Polpette', 'Pollo'], unita: 'pezzi' },
+        { nome: 'LATTICINI', prodotti: ['Fiordilatte', 'Burrata', 'Affumicata'], unita: 'pezzi' }
+      ];
+      
+      categorie.forEach(cat => {
+        // Categoria header
+        doc.setFillColor(245, 245, 245);
+        doc.rect(15, yPos - 5, pageWidth - 30, 10, 'F');
+        doc.setTextColor(232, 90, 25);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(cat.nome, 20, yPos + 2);
+        yPos += 15;
+        
+        // Table header
+        doc.setFillColor(250, 250, 250);
+        doc.rect(15, yPos - 5, pageWidth - 30, 8, 'F');
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text('PRODOTTO', 20, yPos);
+        doc.text('LOTTO', 70, yPos);
+        doc.text('SCADENZA', 105, yPos);
+        doc.text('PESO (gr)', 145, yPos);
+        doc.text('N° ' + cat.unita.toUpperCase(), 175, yPos);
+        yPos += 8;
+        
+        // Prodotti
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(50, 50, 50);
+        doc.setFontSize(10);
+        
+        cat.prodotti.forEach(prodotto => {
+          const p = dati.inventario[prodotto] || {};
+          doc.text(prodotto, 20, yPos);
+          doc.text(p.lotto || '-', 70, yPos);
+          doc.text(formatDate(p.scadenza) || '-', 105, yPos);
+          doc.text(p.peso || '-', 145, yPos);
+          doc.text(p.quantita || '-', 175, yPos);
+          
+          // Linea separatore
+          doc.setDrawColor(230, 230, 230);
+          doc.line(15, yPos + 3, pageWidth - 15, yPos + 3);
+          yPos += 10;
+        });
+        
+        yPos += 10;
+      });
+      
+      // Foto anomalie
+      if (dati.foto && dati.foto.length > 0) {
+        // Nuova pagina per le foto
+        doc.addPage();
+        
+        // Header foto
+        doc.setFillColor(232, 90, 25);
+        doc.rect(0, 0, pageWidth, 25, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('FOTO ANOMALIE', pageWidth / 2, 16, { align: 'center' });
+        
+        let fotoY = 35;
+        const fotoWidth = 70;
+        const fotoHeight = 55;
+        const margin = 15;
+        
+        for (let i = 0; i < dati.foto.length; i++) {
+          const foto = dati.foto[i];
+          
+          // Check if we need a new page
+          if (fotoY + fotoHeight + 30 > pageHeight - 20) {
+            doc.addPage();
+            fotoY = 20;
+          }
+          
+          try {
+            // Foto a sinistra
+            doc.addImage(foto.data, 'JPEG', margin, fotoY, fotoWidth, fotoHeight);
+            
+            // Descrizione a destra
+            doc.setTextColor(232, 90, 25);
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Foto ${i + 1}`, margin + fotoWidth + 10, fotoY + 8);
+            
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            
+            const descrizione = foto.descrizione || 'Nessuna descrizione';
+            const maxWidth = pageWidth - margin - fotoWidth - 25;
+            const lines = doc.splitTextToSize(descrizione, maxWidth);
+            doc.text(lines, margin + fotoWidth + 10, fotoY + 18);
+            
+            // Linea separatore
+            doc.setDrawColor(230, 230, 230);
+            doc.line(margin, fotoY + fotoHeight + 8, pageWidth - margin, fotoY + fotoHeight + 8);
+            
+          } catch (e) {
+            console.error('Errore aggiunta foto:', e);
+          }
+          
+          fotoY += fotoHeight + 20;
+        }
+      }
+      
+      // Footer su tutte le pagine
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setTextColor(180, 180, 180);
+        doc.setFontSize(8);
+        doc.text('Fradiavolo - Inventario generato automaticamente', pageWidth / 2, pageHeight - 10, { align: 'center' });
+      }
+      
+      return doc;
+    }
+    
+    submitBtn.addEventListener('click', async () => {
+      submitBtn.textContent = '⏳ Generazione PDF...';
+      submitBtn.classList.add('loading');
+      
+      try {
+        const dati = collectData();
+        const doc = await generatePDF(dati);
+        
+        const fileName = `Inventario_${dati.puntoVendita.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(fileName);
+        
+        // Success feedback
+        submitBtn.textContent = '✓ PDF Scaricato!';
+        submitBtn.classList.remove('loading');
+        submitBtn.classList.add('success');
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+          submitBtn.textContent = '📄 Scarica PDF';
+          submitBtn.classList.remove('success');
+          toast.classList.remove('show');
+        }, 3000);
+      } catch (error) {
+        console.error('Errore generazione PDF:', error);
+        submitBtn.textContent = '❌ Errore - Riprova';
+        submitBtn.classList.remove('loading');
+        
+        setTimeout(() => {
+          submitBtn.textContent = '📄 Scarica PDF';
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>

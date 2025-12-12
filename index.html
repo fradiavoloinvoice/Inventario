@@ -191,6 +191,12 @@
       color: rgba(255,255,255,0.3);
     }
     
+    .input.locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: rgba(255,255,255,0.04);
+    }
+    
     input[type="date"] {
       -webkit-appearance: none;
       color-scheme: dark;
@@ -601,7 +607,7 @@
           </div>
           <div class="campo-wrapper">
             <label class="label">N° pezzi</label>
-            <input type="text" class="input" data-prodotto="Fiordilatte" data-campo="quantita" placeholder="-" disabled style="opacity: 0.4; cursor: not-allowed;">
+            <input type="text" class="input locked" data-prodotto="Fiordilatte" data-campo="quantita" value="1 busta" disabled>
           </div>
         </div>
       </div>
@@ -623,7 +629,7 @@
           </div>
           <div class="campo-wrapper">
             <label class="label">N° pezzi</label>
-            <input type="text" class="input" data-prodotto="Burrata" data-campo="quantita" placeholder="-" disabled style="opacity: 0.4; cursor: not-allowed;">
+            <input type="text" class="input locked" data-prodotto="Burrata" data-campo="quantita" value="1 busta" disabled>
           </div>
         </div>
       </div>
@@ -645,7 +651,7 @@
           </div>
           <div class="campo-wrapper">
             <label class="label">N° pezzi</label>
-            <input type="text" class="input" data-prodotto="Affumicata" data-campo="quantita" placeholder="-" disabled style="opacity: 0.4; cursor: not-allowed;">
+            <input type="text" class="input locked" data-prodotto="Affumicata" data-campo="quantita" value="1 busta" disabled>
           </div>
         </div>
       </div>
